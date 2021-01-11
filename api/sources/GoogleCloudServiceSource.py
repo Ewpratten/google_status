@@ -45,10 +45,10 @@ class GoogleCloudServiceSource(DataSource):
             # Calculate end time
             end_time = None
             if "end" in event and event["end"]:
-                end_time = datetime.datetime.fromisoformat(event["end"].replace("Z","+00:00"))
+                end_time = datetime.datetime.strptime(event["end"], '%Y-%m-%dT%H:%M:%SZ')
             
             output.append(Incident(
-                time_start=datetime.datetime.fromisoformat(event["begin"].replace("Z","+00:00")),
+                time_start=datetime.datetime.strptime(event["begin"], '%Y-%m-%dT%H:%M:%SZ'),
                 time_end=end_time,
                 description=event["external_desc"],
                 service=event["service_name"],

@@ -6,7 +6,6 @@ from datetime import datetime
 from .DataSource import DataSource
 from ..events.Incident import Incident
 
-
 class GoogleWorkspaceSource(DataSource):
 
     # cache of all provided service names
