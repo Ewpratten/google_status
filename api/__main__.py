@@ -24,6 +24,10 @@ def page_not_found(e):
     return "Error 404", 404
     # return flask.render_template('404.html'), 404
 
+@app.route("/")
+def index():
+    return flask.render_template('index.html')
+
 
 @app.route("/api/services")
 def getServices():

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Status</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        .list-group-item-action {
+            color: rgb(35, 154, 200);
+        }
+    </style>
+
+    <!-- Discovery -->
+    <link rel="alternate" title="Google Status" type="application/json" href="/api/incidents">
+    <meta property="og:title" content="Google Status">
+    <meta property="og:locale" content="en_US">
+    <meta name="description" content="Aggregated status information for google services">
+    <meta property="og:description" content="Aggregated status information for google services">
+    <link rel="canonical" href="https://googlestatus.retrylife.ca/">
+    <meta property="og:url" content="https://googlestatus.retrylife.ca/">
+    <meta property="og:site_name" content="Google Status">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <span class="navbar-brand mb-0 h1">Google Status</span>
+        <span class="navbar-text">
+            <a href="/api/incidents" style="color:rgb(35, 154, 200);">JSON</a> | <a href="https://retrylife.ca"
+                style="color:rgb(35, 154, 200);">Home</a>
+        </span>
+    </nav>
+
+    <div class="content container">
+
+        <div style="height:15vh"></div>
+        <div style="text-align:center">
+            <h1>Google Status</h1>
+            <h4>This page displays a feed of status updates regarding all Google products</h4>
+        </div>
+        <div style="height:15vh"></div>
+
+        <ul class="list-group" id="google_updates">
+            <li class="list-group-item">Waiting for updates...</li>
+        </ul>
+    </div>
+
+
+    <script>
+
+        // Fetch updates
+        const Http = new XMLHttpRequest();
+        const url = "/api/incidents";
+        Http.open("GET", url);
+        Http.send();
+
+        // Handle response
+        Http.onreadystatechange = (e) => {
+            // Get response data
+            var response;
+            try {
+                response = JSON.parse(Http.response);
+            } catch (error) {
+                return;
+            }
+
+            // Set all data
+            if (response.success) {
+
+                // Feed container
+                feedContainer = document.getElementById("google_updates");
+                feedContainer.innerHTML = "";
+
+                // Render every incident
+                response.incidents.forEach((ix) => {
+
+                    // Build an element
+                    if (ix.url) {
+                        var newElem = document.createElement("a");
+                        newElem.classList.add("list-group-item");
+                        newElem.classList.add("list-group-item-action");
+                        newElem.href = ix.url;
+                    } else {
+                        var newElem = document.createElement("li");
+                        newElem.classList.add("list-group-item");
+                    }
+
+                    // Build heading
+                    var itemHeading = document.createElement("div");
+                    itemHeading.classList.add("d-flex", "w-100", "justify-content-between");
+                    itemHeading.innerHTML = `<h5 class="mb-1">${ix.service}</h5><small>${ix.time_start}</small>`;
+                    newElem.appendChild(itemHeading);
+
+                    // Add description
+                    newElem.innerHTML += `<p class="mb-1">${ix.description}</p>`;
+
+                    // Add element to listing
+                    feedContainer.appendChild(newElem);
+
+                });
+
+            }
+        };
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
