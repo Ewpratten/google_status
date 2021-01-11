@@ -1,18 +1,19 @@
 from dataclasses import dataclass
 from typing import Optional
+import datetime
 
 
 @dataclass
 class Incident:
 
     # Time
-    time_start: str
-    time_end: Optional[str] = None
+    time_start: datetime.datetime
 
     # Info
     description: str
     service: str
     severity: str
     
-    # External
+    # Optionals    
+    time_end: Optional[datetime.datetime] = None
     url: Optional[str] = None

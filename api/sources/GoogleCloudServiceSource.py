@@ -1,5 +1,6 @@
 import requests
 from typing import List
+import datetime
 
 from .DataSource import DataSource
 from ..events.Incident import Incident
@@ -15,10 +16,14 @@ class GoogleCloudServiceSource(DataSource):
         # Handle building cache
         if not self._provided_service_name_cache:
             self._provided_service_name_cache = []
-            
+
             # Fill the cache
             for item in self.getAllIncidents():
                 self._provided_service_name_cache.append(item.service)
+
+            # Filter duplicates
+            self._provided_service_name_cache = list(
+                dict.fromkeys(self._provided_service_name_cache))
 
         return self._provided_service_name_cache
 
@@ -37,9 +42,14 @@ class GoogleCloudServiceSource(DataSource):
         # Handle every item
         output = []
         for event in data_json:
+            # Calculate end time
+            end_time = None
+            if "end" in event and event["end"]:
+                end_time = datetime.datetime.fromisoformat(event["end"].replace("Z","+00:00"))
+            
             output.append(Incident(
-                time_start=event["begin"],
-                time_end=event.get("end", None),
+                time_start=datetime.datetime.fromisoformat(event["begin"].replace("Z","+00:00")),
+                time_end=end_time,
                 description=event["external_desc"],
                 service=event["service_name"],
                 severity=event["severity"],
